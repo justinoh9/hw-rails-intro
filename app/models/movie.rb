@@ -10,4 +10,13 @@ class Movie < ApplicationRecord
 
     where("UPPER(rating) IN (?)", ratings_list.map(&:upcase))
   end
+
+  def self.sortable_columns
+    %w[title release_date]
+  end
+
+  # Only sort by a column we know about; anything else leaves the order alone.
+  def self.sorted_by(column)
+    sortable_columns.include?(column) ? order(column => :asc) : all
+  end
 end

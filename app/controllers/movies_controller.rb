@@ -7,7 +7,8 @@ class MoviesController < ApplicationController
     # params[:ratings] looks like {"G"=>"1", "R"=>"1"}; only checked boxes appear.
     # Nothing checked (or first visit) means show everything, all boxes checked.
     @ratings_to_show = params[:ratings].present? ? params[:ratings].keys : @all_ratings
-    @movies = Movie.with_ratings(@ratings_to_show)
+    @sort_by = params[:sort_by]
+    @movies = Movie.with_ratings(@ratings_to_show).sorted_by(@sort_by)
   end
 
   # GET /movies/1 or /movies/1.json
