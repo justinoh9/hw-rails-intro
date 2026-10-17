@@ -4,10 +4,23 @@ class MoviesController < ApplicationController
   # GET /movies or /movies.json
   def index
     @all_ratings = Movie.all_ratings
+
+    # A bare GET /movies (e.g. "Back to movies") carries no settings. If we saved
+    # some earlier, redirect to the URL that spells them out, so the URL stays
+    # the single source of truth (RESTful).
+    if params[:ratings].nil? && params[:sort_by].nil? && session[:ratings]
+      redirect_to movies_path(ratings: session[:ratings].index_with("1"),
+                              sort_by: session[:sort_by])
+      return
+    end
+
     # params[:ratings] looks like {"G"=>"1", "R"=>"1"}; only checked boxes appear.
     # Nothing checked (or first visit) means show everything, all boxes checked.
     @ratings_to_show = params[:ratings].present? ? params[:ratings].keys : @all_ratings
     @sort_by = params[:sort_by]
+    session[:ratings] = @ratings_to_show
+    session[:sort_by] = @sort_by
+
     @movies = Movie.with_ratings(@ratings_to_show).sorted_by(@sort_by)
   end
 
